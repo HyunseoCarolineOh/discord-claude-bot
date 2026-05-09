@@ -59,7 +59,7 @@ class BotConfig:
     prefix: str = "!claude"
     silent_prefix: str = "//"
     max_response_length: int = 1900
-    claude_timeout: int = 300
+    claude_timeout: int = 3600
     debate: DebateConfig = field(default_factory=DebateConfig)
     clear_command: str = "/clear"
     history_limit_channel: int = 30
@@ -258,7 +258,7 @@ def _parse_bot(raw: dict) -> BotConfig:
         prefix=str(raw.get("prefix", "!claude")),
         silent_prefix=str(raw.get("silent_prefix", "//")),
         max_response_length=int(raw.get("max_response_length", 1900)),
-        claude_timeout=int(raw.get("claude_timeout", 300)),
+        claude_timeout=int(raw.get("claude_timeout", 3600)),
         debate=debate,
         clear_command=str(raw.get("clear_command", "/clear")),
         history_limit_channel=int(raw.get("history_limit_channel", 30)),

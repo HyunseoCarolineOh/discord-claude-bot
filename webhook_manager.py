@@ -103,6 +103,7 @@ class WebhookManager:
         username: str,
         avatar_url: str,
         thread: discord.Thread | None = None,
+        files: list[discord.File] | None = None,
     ) -> discord.WebhookMessage:
         """webhook으로 메시지 전송. thread가 주어지면 그 스레드 안으로 보냄."""
         wh = await self.get_or_create(channel)
@@ -114,6 +115,8 @@ class WebhookManager:
         )
         if thread is not None:
             kwargs["thread"] = thread
+        if files:
+            kwargs["files"] = files
         try:
             return await wh.send(**kwargs)
         except discord.HTTPException as e:
@@ -126,12 +129,16 @@ class WebhookManager:
         *,
         content: str,
         thread: discord.Thread | None = None,
+        files: list[discord.File] | None = None,
     ) -> discord.WebhookMessage:
-        """webhook 메시지 수정. thread 안의 메시지면 thread 인자 필요."""
+        """webhook 메시지 수정. thread 안의 메시지면 thread 인자 필요.
+        files 가 주어지면 그 파일들을 첨부로 추가한다."""
         wh = await self.get_or_create(channel)
-        kwargs = {"content": content}
+        kwargs: dict = {"content": content}
         if thread is not None:
             kwargs["thread"] = thread
+        if files:
+            kwargs["attachments"] = files
         try:
             return await wh.edit_message(message_id, **kwargs)
         except discord.HTTPException as e:

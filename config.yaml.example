@@ -90,7 +90,7 @@ bot:
   # 이 prefix로 시작하는 메시지는 응답하지 않음 (메모/혼잣말용). all_messages 모드에서 유용
   silent_prefix: "//"
   max_response_length: 1900
-  claude_timeout: 300
+  claude_timeout: 3600
   debate:
     # 토론 누적 발화 수 안전망 (이 수에 도달하면 강제 종료)
     max_total_speeches: 30

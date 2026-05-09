@@ -118,7 +118,7 @@ python bot.py
 | `webhook 생성 권한 없음 (#xxx): Manage Webhooks 권한 필요` | OAuth2 URL 재생성 시 Manage Webhooks 권한 포함 → 봇 재초대 |
 | `claude exit code N: ...` | `claude login` 으로 재로그인. 또는 `claude --version` 으로 CLI 자체 확인 |
 | `claude 응답 JSON 파싱 실패` | `claude` CLI 버전이 너무 낮을 수 있음 — 최신으로 업데이트 |
-| `claude 응답이 N초 내에 오지 않았어요` | `config.yaml`의 `bot.claude_timeout` 늘리기 (기본 300초) |
+| `claude 응답이 N초 내에 오지 않았어요` | `config.yaml`의 `bot.claude_timeout` 늘리기 (기본 3600초) |
 | PowerShell에서 한글이 `���`로 깨짐 | 봇 동작에는 영향 없음. 콘솔에서 깔끔하게 보고 싶으면 `chcp 65001` 후 재실행 |
 | webhook 캐시가 꼬인 듯 | `webhook_cache.json` 삭제 → 다음 호출 시 webhook 자동 재생성 |
 | `DISCORD_BOT_TOKEN 환경변수가 설정되지 않았습니다` | `.env` 파일이 봇과 같은 디렉토리에 있는지, 키 이름 정확한지 |

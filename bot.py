@@ -16,7 +16,7 @@ from pathlib import Path
 import discord
 from dotenv import load_dotenv
 
-from attachments import render_attachments
+from attachments import extract_referenced_files, render_attachments
 from claude_runner import ClaudeRunnerError, ClaudeTimeout, run_claude
 from config import AppConfig, ConfigError, PersonaConfig, TeamConfig, load_config
 from daily_scheduler import DailyScheduler
@@ -431,7 +431,10 @@ class ClaudeBot(discord.Client):
             response_text = f"{ERROR_PREFIX}예상치 못한 오류: {e}"
             log.exception("unexpected (persona=%s)", persona_key)
 
-        await self._post_chunks(channel, persona, placeholder.id, response_text, thread=thread)
+        await self._post_chunks(
+            channel, persona, placeholder.id, response_text,
+            thread=thread, project_dir=team.project_dir,
+        )
 
         # 일반 스레드 자동 dispatch: 페르소나 응답에 @<key> 멘션이 있으면 다음 페르소나 호출.
         if (
@@ -516,7 +519,10 @@ class ClaudeBot(discord.Client):
             response_text = f"{ERROR_PREFIX}예상치 못한 오류: {e}"
             log.exception("unexpected (chain persona=%s)", persona_key)
 
-        await self._post_chunks(channel, persona, placeholder.id, response_text, thread=thread)
+        await self._post_chunks(
+            channel, persona, placeholder.id, response_text,
+            thread=thread, project_dir=team.project_dir,
+        )
 
         if response_text.startswith(ERROR_PREFIX):
             return
@@ -533,13 +539,28 @@ class ClaudeBot(discord.Client):
         text: str,
         *,
         thread: discord.Thread | None = None,
+        project_dir: Path | None = None,
     ) -> None:
         target_channel = thread.parent if thread is not None else channel
+
+        # 응답 본문 백틱 경로 → 디스코드 첨부. 에러 응답엔 첨부 시도 안 함.
+        files: list[discord.File] = []
+        if project_dir is not None and not text.startswith(ERROR_PREFIX):
+            paths, warnings = extract_referenced_files(text, project_dir)
+            for p in paths:
+                try:
+                    files.append(discord.File(str(p), filename=p.name))
+                except OSError as e:
+                    log.warning("첨부 파일 열기 실패 %s: %s", p, e)
+            if warnings:
+                text = text + "\n\n" + "\n".join(warnings)
+
         chunks = split_message(text, self.cfg.bot.max_response_length)
         try:
             await self.webhooks.edit(
                 target_channel, placeholder_id,
                 content=chunks[0], thread=thread,
+                files=files or None,
             )
             for chunk in chunks[1:]:
                 await self.webhooks.send(
@@ -551,6 +572,12 @@ class ClaudeBot(discord.Client):
                 )
         except WebhookError as e:
             log.error("응답 전송 실패: %s", e)
+        finally:
+            for f in files:
+                try:
+                    f.close()
+                except Exception:  # noqa: BLE001
+                    pass
 
     # --- 토론 시작 ---
     async def _start_debate(
@@ -720,7 +747,8 @@ class ClaudeBot(discord.Client):
             response_text = f"{ERROR_PREFIX}예상치 못한 오류: {e}"
 
         await self._post_chunks(
-            thread.parent, persona, placeholder.id, response_text, thread=thread,
+            thread.parent, persona, placeholder.id, response_text,
+            thread=thread, project_dir=team.project_dir,
         )
         session.record_speech(persona_key)
 

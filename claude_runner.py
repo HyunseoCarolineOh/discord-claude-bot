@@ -112,7 +112,7 @@ async def run_claude(
     message: str,
     system_prompt: str,
     project_dir: Path,
-    timeout: int = 300,
+    timeout: int = 3600,
     claude_cmd: str = "claude",
     team_context: dict | None = None,
 ) -> ClaudeResult:
