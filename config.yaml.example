@@ -1,0 +1,100 @@
+# 페르소나(직원) 정의 — 키는 영문, members 와 lead 에서 참조
+personas:
+  pm:
+    display_name: "ArtPrep PM"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/0.png"
+    prompt_file: "personas/pm.md"
+  planner:
+    display_name: "ArtPrep 기획자"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/1.png"
+    prompt_file: "personas/planner.md"
+  frontend:
+    display_name: "ArtPrep Frontend"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/2.png"
+    prompt_file: "personas/frontend.md"
+  backend:
+    display_name: "ArtPrep Backend"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/3.png"
+    prompt_file: "personas/backend.md"
+  designer:
+    display_name: "ArtPrep UI Designer"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/4.png"
+    prompt_file: "personas/designer.md"
+
+  sales_manager:
+    display_name: "TE Sales Manager"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/0.png"
+    prompt_file: "personas/sales_manager.md"
+  leadminer:
+    display_name: "TE Lead Miner"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/1.png"
+    prompt_file: "personas/leadminer.md"
+  am:
+    display_name: "TE Account Manager"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/2.png"
+    prompt_file: "personas/am.md"
+  content:
+    display_name: "TE Content Manager"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/3.png"
+    prompt_file: "personas/content.md"
+
+  bd:
+    display_name: "ArtPrep BD Manager"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/0.png"
+    prompt_file: "personas/bd.md"
+
+  ma:
+    display_name: "M&A 자문 파트너"
+    avatar_url: "https://cdn.discordapp.com/embed/avatars/0.png"
+    prompt_file: "personas/ma.md"
+
+# 팀 정의 — 채널은 한 팀에 매핑되고, 팀 안의 직원들이 함께 활동
+teams:
+  artprep:
+    display_name: "ArtPrep 프로덕트 팀"
+    project_dir: "./projects/artprep"
+    members: [pm, planner, frontend, backend, designer]
+    lead: pm
+  te-sales:
+    display_name: "TechEquity Sales 팀"
+    project_dir: "./projects/te-sales"
+    members: [sales_manager, leadminer, am, content]
+    lead: sales_manager
+  artprep-bd:
+    display_name: "ArtPrep BD 팀"
+    project_dir: "./projects/artprep-bd"
+    members: [bd]
+    lead: bd
+  inspaceroom-ma:
+    display_name: "인스퍼룸 매각 TF"
+    project_dir: "./projects/inspaceroom-ma"
+    members: [ma]
+    lead: ma
+
+# 채널 → 팀 매핑
+channels:
+  "1234567890123456789":     # #artprep
+    team: artprep
+  "9876543210987654321":     # #te-sales
+    team: te-sales
+  "1111222233334444555":     # #artprep-bd
+    team: artprep-bd
+  "5555666677778888999":     # #inspaceroom-ma
+    team: inspaceroom-ma
+
+bot:
+  # mention | prefix | all_messages
+  # all_messages: 매핑된 채널의 모든 메시지에 응답 (멘션 불필요)
+  trigger_mode: "mention"
+  prefix: "!claude"
+  # 이 prefix로 시작하는 메시지는 응답하지 않음 (메모/혼잣말용). all_messages 모드에서 유용
+  silent_prefix: "//"
+  max_response_length: 1900
+  claude_timeout: 300
+  debate:
+    # 토론 누적 발화 수 안전망 (이 수에 도달하면 강제 종료)
+    max_total_speeches: 30
+    # 페르소나 응답 마지막 줄이 이걸로 시작하면 결론으로 보고 자동 종료
+    conclusion_marker: "[결론]"
+    command_prefix: "!debate"
+    end_command: "!end"

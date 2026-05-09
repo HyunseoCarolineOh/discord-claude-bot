@@ -1,0 +1,13 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+config.yaml
+webhook_cache.json
+attachment_cache/
+projects/*
+!projects/.gitkeep
+.DS_Store
+Thumbs.db
